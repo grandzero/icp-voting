@@ -71,7 +71,7 @@ fn get_proposal_count() -> u64 {
 #[ic_cdk::update]
 fn create_proposal(key: u64, proposal: CreateProposal) -> Option<Proposal> {
     PROPOSALS.with(|proposals| {
-        let mut proposals = proposals.borrow_mut();
+        let proposals = proposals.borrow_mut();
         if proposals.contains_key(&key) {
             return None;
         }
