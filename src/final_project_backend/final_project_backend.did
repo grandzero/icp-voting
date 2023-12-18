@@ -60,7 +60,7 @@ service: {
     "get_proposal_count": () -> (nat64) query;
     "get_privileged_proposal_count": () -> (nat64) query;
     "create_proposal": (nat64, CreateProposal) -> (opt Proposal);
-    "create_privileged_proposal": (nat64, CreateProposal) -> (opt PrivilegedProposal);
+    "create_privileged_proposal": (nat64, CreatePrivilegedProposal) -> (opt PrivilegedProposal);
     "edit_proposal": (nat64, CreateProposal) -> (Result);
     "edit_privileged_proposal": (nat64, CreatePrivilegedProposal) -> (Result);  
     "end_proposal": (nat64) -> (Result);

@@ -2,7 +2,6 @@ use candid::{CandidType, Decode, Deserialize, Encode};
 use ic_cdk::api::call::{call, CallResult};
 use ic_stable_structures::memory_manager::{MemoryId, MemoryManager, VirtualMemory};
 use ic_stable_structures::{BoundedStorable, DefaultMemoryImpl, StableBTreeMap, Storable};
-use std::f32::consts::E;
 use std::result;
 use std::{borrow::Cow, cell::RefCell};
 
@@ -122,7 +121,7 @@ fn get_privileged_proposal_count() -> u64 {
 #[ic_cdk::update]
 fn create_proposal(key: u64, proposal: CreateProposal) -> Option<Proposal> {
     PROPOSALS.with(|proposals| {
-        let proposals = proposals.borrow_mut();
+        let mut proposals = proposals.borrow_mut();
         if proposals.contains_key(&key) {
             return None;
         }
@@ -135,7 +134,7 @@ fn create_proposal(key: u64, proposal: CreateProposal) -> Option<Proposal> {
             voters: Vec::new(),
             owner: ic_cdk::caller(),
         };
-        PROPOSALS.with(|proposals| proposals.borrow_mut().insert(key, proposal))
+        proposals.insert(key, proposal)
     })
 }
 // Create Privileged Proposals
@@ -156,7 +155,7 @@ async fn create_privileged_proposal(
         }
     }
     PRIVILEGED_PROPOSALS.with(|proposals| {
-        let proposals = proposals.borrow_mut();
+        let mut proposals = proposals.borrow_mut();
         if proposals.contains_key(&key) {
             return None;
         }
@@ -170,7 +169,7 @@ async fn create_privileged_proposal(
             owner: ic_cdk::caller(),
             nft_canister: proposal.nft_canister,
         };
-        PRIVILEGED_PROPOSALS.with(|proposals| proposals.borrow_mut().insert(key, proposal))
+        proposals.insert(key, proposal)
     })
 }
 
@@ -305,7 +304,8 @@ fn vote(key: u64, choice: Choice) -> Result<(), VoteError> {
 // Vote for privileged proposal
 #[ic_cdk::update]
 async fn vote_privileged(key: u64, choice: Choice) -> Result<(), VoteError> {
-    let privileged_proposal: Option<PrivilegedProposal> = get_privileged_proposal(key);
+    let privileged_proposal: Option<PrivilegedProposal> =
+        PRIVILEGED_PROPOSALS.with(|proposals| proposals.borrow().get(&key));
     if let Some(proposal) = privileged_proposal {
         let user_principal =  ic_cdk::caller()/* the principal you want to pass as argument */;
         let result: CallResult<(u64,)> =
