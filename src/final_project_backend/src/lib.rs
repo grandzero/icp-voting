@@ -2,6 +2,7 @@ use candid::{CandidType, Decode, Deserialize, Encode};
 use ic_cdk::api::call::{call, CallResult};
 use ic_stable_structures::memory_manager::{MemoryId, MemoryManager, VirtualMemory};
 use ic_stable_structures::{BoundedStorable, DefaultMemoryImpl, StableBTreeMap, Storable};
+use std::f32::consts::E;
 use std::result;
 use std::{borrow::Cow, cell::RefCell};
 
@@ -253,6 +254,27 @@ fn end_proposal(key: u64) -> Result<(), VoteError> {
     })
 }
 
+// End privileged Proposal
+#[ic_cdk::update]
+fn end_privileged_proposal(key: u64) -> Result<(), VoteError> {
+    PRIVILEGED_PROPOSALS.with(|proposals| {
+        let old_proposal_opt = proposals.borrow().get(&key);
+        let mut old_proposal: PrivilegedProposal = match old_proposal_opt {
+            Some(old_proposal) => old_proposal,
+            None => return Err(VoteError::ProposalDoesNotExist),
+        };
+        if old_proposal.owner != ic_cdk::caller() {
+            return Err(VoteError::AccessRejected);
+        }
+        old_proposal.is_active = false;
+        if let Some(_) = proposals.borrow_mut().insert(key, old_proposal) {
+            Ok(())
+        } else {
+            Err(VoteError::UpdateError)
+        }
+    })
+}
+
 #[ic_cdk::update]
 fn vote(key: u64, choice: Choice) -> Result<(), VoteError> {
     PROPOSALS.with(|proposals| {
@@ -267,6 +289,49 @@ fn vote(key: u64, choice: Choice) -> Result<(), VoteError> {
         if old_proposal.voters.contains(&ic_cdk::caller()) {
             return Err(VoteError::AlreadyVoted);
         }
+        old_proposal.voters.push(ic_cdk::caller());
+        match choice {
+            Choice::Aprrove => old_proposal.approve += 1,
+            Choice::Reject => old_proposal.reject += 1,
+            Choice::Pass => old_proposal.pass += 1,
+        };
+        if let Some(_) = proposals.borrow_mut().insert(key, old_proposal) {
+            Ok(())
+        } else {
+            Err(VoteError::UpdateError)
+        }
+    })
+}
+// Vote for privileged proposal
+#[ic_cdk::update]
+async fn vote_privileged(key: u64, choice: Choice) -> Result<(), VoteError> {
+    let privileged_proposal: Option<PrivilegedProposal> = get_privileged_proposal(key);
+    if let Some(proposal) = privileged_proposal {
+        let user_principal =  ic_cdk::caller()/* the principal you want to pass as argument */;
+        let result: CallResult<(u64,)> =
+            call(proposal.nft_canister, "balanceOfDip721", (user_principal,)).await;
+        if let result::Result::Ok((balance,)) = result {
+            if balance == 0 {
+                return Err(VoteError::AccessRejected);
+            }
+        }
+    } else {
+        return Err(VoteError::ProposalDoesNotExist);
+    }
+
+    PRIVILEGED_PROPOSALS.with(|proposals| {
+        let old_proposal_opt = proposals.borrow().get(&key);
+        let mut old_proposal: PrivilegedProposal = match old_proposal_opt {
+            Some(old_proposal) => old_proposal,
+            None => return Err(VoteError::ProposalDoesNotExist),
+        };
+        if !old_proposal.is_active {
+            return Err(VoteError::ProposalIsNotActive);
+        }
+        if old_proposal.voters.contains(&ic_cdk::caller()) {
+            return Err(VoteError::AlreadyVoted);
+        }
+
         old_proposal.voters.push(ic_cdk::caller());
         match choice {
             Choice::Aprrove => old_proposal.approve += 1,
