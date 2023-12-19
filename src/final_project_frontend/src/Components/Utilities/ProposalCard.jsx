@@ -39,15 +39,15 @@ const ProposalCard = ({ proposal, proposalCount }) => {
         "text-white cursor-pointer hover:text-[#ff0054] absolute left-[5rem]";
     // Calculate total votes and percentages
     const totalVotes = proposal
-        ? proposal[0]?.approve + proposal[0]?.reject + proposal[0]?.pass
+        ? proposal?.approve + proposal?.reject + proposal?.pass
         : 0;
     const approvePercent = proposal
-        ? (proposal[0]?.approve / totalVotes) * 100
+        ? (proposal?.approve / totalVotes) * 100
         : 0;
     const rejectPercent = proposal
-        ? (proposal[0]?.reject / totalVotes) * 100
+        ? (proposal?.reject / totalVotes) * 100
         : 0;
-    const passPercent = proposal ? (proposal[0]?.pass / totalVotes) * 100 : 0;
+    const passPercent = proposal ? (proposal?.pass / totalVotes) * 100 : 0;
 
     // Vote bar styles
     const voteBarStyle = {
@@ -123,7 +123,7 @@ const ProposalCard = ({ proposal, proposalCount }) => {
                     ) : (
                         <span className={descStyle}>
                             {proposal
-                                ? proposal[0]?.description
+                                ? proposal?.description
                                 : "Proposal Loading..."}
                         </span>
                     )}
@@ -146,8 +146,8 @@ const ProposalCard = ({ proposal, proposalCount }) => {
                 <span>
                     Approve:{" "}
                     <span className={approveStyle}>
-                        {proposal && proposal[0]?.approve}{" "}
-                        {proposal && proposal[0].is_active && (
+                        {proposal && proposal?.approve}{" "}
+                        {proposal && proposal.is_active && (
                             <span
                                 onClick={async () => await handleVote(1)}
                                 className={approveVoteStyle}
@@ -160,8 +160,8 @@ const ProposalCard = ({ proposal, proposalCount }) => {
                 <span>
                     Reject:{" "}
                     <span className={rejectStyle}>
-                        {proposal && proposal[0]?.reject}{" "}
-                        {proposal && proposal[0].is_active && (
+                        {proposal && proposal?.reject}{" "}
+                        {proposal && proposal.is_active && (
                             <span
                                 onClick={async () => await handleVote(2)}
                                 className={rejectVoteStyle}
@@ -174,8 +174,8 @@ const ProposalCard = ({ proposal, proposalCount }) => {
                 <span>
                     Pass:{" "}
                     <span className={passStyle}>
-                        {proposal && proposal[0]?.pass}{" "}
-                        {proposal && proposal[0].is_active && (
+                        {proposal && proposal?.pass}{" "}
+                        {proposal && proposal.is_active && (
                             <span
                                 onClick={async () => await handleVote(3)}
                                 className={passVoteStyle}
@@ -193,7 +193,7 @@ const ProposalCard = ({ proposal, proposalCount }) => {
                 </div>
             </div>
             <div className={endProposalStyle}>
-                {proposal[0].is_active ? (
+                {proposal.is_active ? (
                     <div
                         onClick={handleEndProposal}
                         className="hover:text-[#ff0054]"
