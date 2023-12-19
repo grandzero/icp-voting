@@ -11,8 +11,11 @@ const MAX_VALUE_SIZE: u32 = 5000;
 
 #[derive(CandidType, Deserialize, Debug)]
 enum Choice {
+    #[serde(rename = "Approve")]
     Aprrove,
+    #[serde(rename = "Reject")]
     Reject,
+    #[serde(rename = "Pass")]
     Pass,
 }
 #[derive(CandidType, Deserialize, Debug)]
@@ -97,14 +100,22 @@ thread_local! {
 }
 
 #[ic_cdk::query]
-fn get_proposal(key: u64) -> Option<Proposal> {
-    PROPOSALS.with(|proposals| proposals.borrow().get(&key))
+fn get_proposal(key: u64) -> String {
+    if let Some(prop) = PROPOSALS.with(|proposals| proposals.borrow().get(&key)) {
+        String::from(format!("Proposer : {}, Description: {}, Approve: {}, Reject: {}, Pass: {}, Voters: {}, Is Active: {}", prop.owner.clone().to_text() , prop.description, prop.approve, prop.reject, prop.pass, prop.voters.len(), prop.is_active))
+    } else {
+        String::from("Proposal does not exist")
+    }
 }
 
 // Privileged Proposals Details
 #[ic_cdk::query]
-fn get_privileged_proposal(key: u64) -> Option<PrivilegedProposal> {
-    PRIVILEGED_PROPOSALS.with(|proposals| proposals.borrow().get(&key))
+fn get_privileged_proposal(key: u64) -> String {
+    if let Some(prop) = PRIVILEGED_PROPOSALS.with(|proposals| proposals.borrow().get(&key)) {
+        String::from(format!("Proposer : {}, Description: {}, Approve: {}, Reject: {}, Pass: {}, Voters: {}, Is Active: {}, Collection: {}", prop.owner.clone().to_text() , prop.description, prop.approve, prop.reject, prop.pass, prop.voters.len(), prop.is_active, prop.nft_canister.clone().to_text()))
+    } else {
+        String::from("Proposal does not exist")
+    }
 }
 
 #[ic_cdk::query]

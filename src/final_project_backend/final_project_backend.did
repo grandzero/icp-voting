@@ -55,8 +55,8 @@ type Choice =
     };
 
 service: {
-    "get_proposal": (nat64) -> (opt Proposal) query;
-    "get_privileged_proposal": (nat64) -> (opt PrivilegedProposal) query;
+    "get_proposal": (nat64) -> (text) query;
+    "get_privileged_proposal": (nat64) -> (text) query;
     "get_proposal_count": () -> (nat64) query;
     "get_privileged_proposal_count": () -> (nat64) query;
     "create_proposal": (nat64, CreateProposal) -> (opt Proposal);
