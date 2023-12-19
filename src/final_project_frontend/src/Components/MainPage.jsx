@@ -15,17 +15,7 @@ const MainPage = () => {
         console.log(final_project_backend);
         const fetchProposals = async () => {
             // const arg= {val_test: 1, val: [1]} ;
-            let proposal = {
-                description: "",
-                approve: 0,
-                reject: 0,
-                pass: 0,
-                is_active: false,
-                voted: 0,
-                owner: "",
-                privilege: []
-            }
-            proposal = await final_project_backend.get_proposal(6);
+            let proposal  = await final_project_backend.get_proposal_list();
             console.log("Proposal list : ",proposal);
             // setProposalList(proposalList);
             // setProposalCount(proposalList.length);

@@ -91,13 +91,14 @@ fn get_proposal_count() -> u64 {
 }
 
 #[ic_cdk::query]
-fn get_proposal_list(is_privileged: Test) -> u64 {
-    // if let Some(_) = is_privileged.val {
-    //     PRIVILEGED_PROPOSALS.with(|proposals| proposals.borrow().len() as u64)
-    // } else {
-    //     PROPOSALS.with(|proposals| proposals.borrow().len() as u64)
-    // }
-    return 0;
+fn get_proposal_list() -> Vec<Proposal> {
+    PROPOSALS.with(|proposals| {
+        proposals
+            .borrow_mut()
+            .iter()
+            .map(|(_, value)| value)
+            .collect::<Vec<Proposal>>()
+    })
 }
 
 #[ic_cdk::update]
