@@ -5,32 +5,17 @@ type Proposal =
         reject: nat32;
         pass: nat32;
         is_active: bool;
-        voted: vec principal;
+        voters: vec principal;
         owner: principal;
+        privilege: opt principal
     };
-type PrivilegedProposal = 
-    record {
-        description: text;
-        approve: nat32;
-        reject: nat32;
-        pass: nat32;
-        is_active: bool;
-        voted: vec principal;
-        owner: principal;
-        nft_canister: principal;
-    };
+
 
 type CreateProposal = 
     record {
         description: text;
         is_active: bool;
-    };
-
-type CreatePrivilegedProposal = 
-    record {
-        description: text;
-        is_active: bool;
-        nft_canister: principal;
+        privilege: opt principal
     };
 
 type Result = 
@@ -59,17 +44,12 @@ type Test =
         val_test: nat32
     };
 service: {
-    "get_proposal": (nat64) -> (text) query;
-    "get_privileged_proposal": (nat64) -> (text) query;
+    "get_proposal_string": (nat64) -> (text) query;
+    "get_proposal": (nat64) -> (opt Proposal) query;
     "get_proposal_count": () -> (nat64) query;
-    "get_privileged_proposal_count": () -> (nat64) query;
     "create_proposal": (nat64, CreateProposal) -> (opt Proposal);
-    "create_privileged_proposal": (nat64, CreatePrivilegedProposal) -> (opt PrivilegedProposal);
     "edit_proposal": (nat64, CreateProposal) -> (Result);
-    "edit_privileged_proposal": (nat64, CreatePrivilegedProposal) -> (Result);  
     "end_proposal": (nat64) -> (Result);
-    "end_privileged_proposal": (nat64) -> (Result);
     "vote": (nat64, Choice) -> (Result);
-    "vote_privileged": (nat64, Choice) -> (Result);
     "get_proposal_list": (Test) -> (nat64)
 }
