@@ -5,14 +5,34 @@ import { final_project_backend } from "../../../declarations/final_project_backe
 import RoundProfileSection from "./RoundProfileSection";
 import FourCardsSection from "./FourCardsSection";
 import HeroSection from "./HeroSection";
+import { AuthClient } from "@dfinity/auth-client";
 
+let authClient = await AuthClient.create();
 const MainPage = () => {
     const [currentProposal, setCurrentProposal] = useState();
     const [proposalList, setProposalList] = useState([]);
     const [proposalCount, setProposalCount] = useState(0);
 
+    async function login() {
+        authClient = await authClient.login({
+            onSuccess: () => {
+                console.log("We are in")
+                // The user has been authenticated, and you can now make calls to the Internet Computer
+                // on their behalf.
+            },
+        });
+        console.log("authClient",authClient);
+    }
+
+    async function logout() {
+        await authClient.logout();
+        // The user is now logged out.
+    }
+
+
     // Get Proposal List Function
     useEffect(() => {
+        
         console.log("Entered useeffect");
         console.log(final_project_backend);
         const fetchProposals = async () => {
@@ -46,6 +66,7 @@ const MainPage = () => {
                 }}
             >
                 <NavBar />
+                <button onClick={login}>Login Test</button>
                 {currentProposal && (
                     <HeroSection
                         proposalCount={proposalCount}

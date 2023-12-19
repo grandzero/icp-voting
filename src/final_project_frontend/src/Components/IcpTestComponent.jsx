@@ -9,21 +9,7 @@ const IcpTestComponent = () => {
     const [name, setName] = useState("");
     const [message, setMessage] = useState("");
 
-    async function login() {
-        // authClient = await authClient.login({
-        //     onSuccess: () => {
-        //         console.log("We are in")
-        //         // The user has been authenticated, and you can now make calls to the Internet Computer
-        //         // on their behalf.
-        //     },
-        // });
-    }
-
-    // async function logout() {
-    //     await authClient.logout();
-    //     // The user is now logged out.
-    // }
-
+    
     //Styles
     const inputStyle = "border-2 rounded-xl mt-4 p-2";
     const buttonStyle = "border-2 rounded-xl  ml-4 p-2";
