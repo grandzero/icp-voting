@@ -38,6 +38,12 @@ struct Proposal {
 }
 
 #[derive(CandidType, Deserialize, Debug)]
+struct Test {
+    val: Option<u32>,
+    val_test: u32,
+}
+
+#[derive(CandidType, Deserialize, Debug)]
 struct PrivilegedProposal {
     description: String,
     approve: u32,
@@ -121,6 +127,15 @@ fn get_privileged_proposal(key: u64) -> String {
 #[ic_cdk::query]
 fn get_proposal_count() -> u64 {
     PROPOSALS.with(|proposals| proposals.borrow().len() as u64)
+}
+
+#[ic_cdk::query]
+fn get_proposal_list(is_privileged: Test) -> u64 {
+    if let Some(_) = is_privileged.val {
+        PRIVILEGED_PROPOSALS.with(|proposals| proposals.borrow().len() as u64)
+    } else {
+        PROPOSALS.with(|proposals| proposals.borrow().len() as u64)
+    }
 }
 
 // Privileged Proposals Count

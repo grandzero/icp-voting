@@ -53,7 +53,11 @@ type Choice =
         Reject;
         Pass;
     };
-
+type Test = 
+    record{
+        val: opt nat32;
+        val_test: nat32
+    };
 service: {
     "get_proposal": (nat64) -> (text) query;
     "get_privileged_proposal": (nat64) -> (text) query;
@@ -67,4 +71,5 @@ service: {
     "end_privileged_proposal": (nat64) -> (Result);
     "vote": (nat64, Choice) -> (Result);
     "vote_privileged": (nat64, Choice) -> (Result);
+    "get_proposal_list": (Test) -> (nat64)
 }

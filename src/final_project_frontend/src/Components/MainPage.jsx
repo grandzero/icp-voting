@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import NavBar from "./NavBar";
 import bgImg from "../../assets/700.jpg";
+import { final_project_backend } from "../../../declarations/final_project_backend/index";
+
 
 const MainPage = () => {
     const [currentProposal, setCurrentProposal] = useState();
@@ -9,9 +11,17 @@ const MainPage = () => {
 
     // Get Proposal List Function
     useEffect(() => {
-        const fetchProposals = async () => {};
+        console.log("Entered useeffect");
+        console.log(final_project_backend);
+        const fetchProposals = async () => {
+            const arg= {val_test: 1, val: [1]} ;
+            const proposalList = await final_project_backend.get_proposal_list(arg);
+            console.log("Proposal list : ",proposalList);
+            // setProposalList(proposalList);
+            // setProposalCount(proposalList.length);
+        };
 
-        if (proposalCount > 0) {
+        if (true) {
             fetchProposals();
         }
     }, [proposalCount]);
