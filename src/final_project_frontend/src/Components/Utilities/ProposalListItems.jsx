@@ -5,6 +5,7 @@ import editIcon from "../../../assets/edit.png";
 import confirmIcon from "../../../assets/confrim.png";
 import EditInput from "./EditInput";
 import { final_project_backend } from "../../../../declarations/final_project_backend/index";
+import { toast } from "react-hot-toast";
 const ProposalListItems = ({ proposal, index, proposalListLength }) => {
   const [loading, setLoading] = useState(true);
   const [voting, setVoting] = useState(false);
@@ -72,29 +73,66 @@ const ProposalListItems = ({ proposal, index, proposalListLength }) => {
       let result = await final_project_backend.vote(index, {
         Approve: null,
       });
-      console.log("Result is : ", result);
     } catch (e) {
       console.log(e);
     }
     //Vote call to contract
     console.log("after vote has called");
     // console.log(vote);
-    // window.location.reload();
+    window.location.reload();
     setVoting(false);
   };
   const handleEndProposal = async () => {
     setEndingProposal(true);
     //end porposal call to contract
+    try {
+      let result = await final_project_backend.end_proposal(index);
+      console.log(result);
+    } catch (e) {
+      console.log(e);
+      toast.error("Error while ending proposal", {
+        duration: 2000,
+        position: "bottom-right",
+      });
+    }
     console.log("Proposal ended!");
     setEndingProposal(false);
-    // window.location.reload();
+    window.location.reload();
   };
 
   const editProposal = async (count) => {
-    editInput !== "" &&
-      //Edit prosal call to backend
-      console.log("EDITTED!!!");
+    if (editInput === "") {
+      toast.error("Proposal cannot be empty", {
+        duration: 2000,
+        position: "bottom-right",
+      });
+      return;
+    }
+    // editInput !== "" &&
+    //Edit prosal call to backend
+    const createProposal = {
+      description: editInput,
+      is_active: true,
+      privilege: proposal.privilege,
+    };
+    try {
+      const result = await final_project_backend.edit_proposal(
+        index,
+        createProposal
+      );
+      console.log(result);
+      if (result.length == 0) {
+        throw new Error("Error while editing proposal");
+      }
+    } catch (e) {
+      console.log(e);
+      toast.error("Error while editing proposal", {
+        duration: 2000,
+        position: "bottom-right",
+      });
+    }
     setEditMode(false);
+    window.location.reload();
   };
 
   const handleEditMode = () => {

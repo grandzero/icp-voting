@@ -4,7 +4,7 @@ import bgImg from "../../assets/700.jpg";
 import { final_project_backend } from "../../../declarations/final_project_backend/index";
 import CreateProposalSection from "./CreateProposalSection";
 import FourCardsSection from "./FourCardsSection";
-import HeroSection from "./HeroSection";
+// import HeroSection from "./HeroSection";
 
 const MainPage = () => {
   const [currentProposal, setCurrentProposal] = useState();
@@ -15,8 +15,6 @@ const MainPage = () => {
     const fetchProposals = async () => {
       // const arg= {val_test: 1, val: [1]} ;
       let proposals = await final_project_backend.get_proposal_list();
-      console.log("Proposal list : ", proposals);
-      let proposal_count = await final_project_backend.get_proposal_count();
 
       setProposalList(proposals);
       setProposalCount(proposals.length);
