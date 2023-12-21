@@ -73,6 +73,7 @@ const ProposalListItems = ({ proposal, index, proposalListLength }) => {
       let result = await final_project_backend.vote(index, {
         Approve: null,
       });
+      console.log(result);
     } catch (e) {
       console.log(e);
     }
