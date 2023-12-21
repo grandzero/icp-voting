@@ -12,14 +12,12 @@ const MainPage = () => {
   const [proposalCount, setProposalCount] = useState(0);
   // Get Proposal List Function
   useEffect(() => {
-    console.log("Entered useeffect");
-    console.log(final_project_backend);
     const fetchProposals = async () => {
       // const arg= {val_test: 1, val: [1]} ;
       let proposals = await final_project_backend.get_proposal_list();
       console.log("Proposal list : ", proposals);
       let proposal_count = await final_project_backend.get_proposal_count();
-      console.log(proposal_count);
+
       setProposalList(proposals);
       setProposalCount(proposals.length);
       setCurrentProposal(proposals[proposals.length - 1]);

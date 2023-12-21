@@ -4,7 +4,7 @@ import Card from "./Card";
 import editIcon from "../../../assets/edit.png";
 import confirmIcon from "../../../assets/confrim.png";
 import EditInput from "./EditInput";
-
+import { final_project_backend } from "../../../../declarations/final_project_backend/index";
 const ProposalListItems = ({ proposal, index, proposalListLength }) => {
   const [loading, setLoading] = useState(true);
   const [voting, setVoting] = useState(false);
@@ -14,9 +14,7 @@ const ProposalListItems = ({ proposal, index, proposalListLength }) => {
 
   // const proposal = proposalTotal.proposal
   useEffect(() => {
-    console.log("Entered useeffect proposal list items");
     if (proposal) {
-      console.log("Loading");
       setLoading(false);
     }
   }, [proposal]);
@@ -59,33 +57,37 @@ const ProposalListItems = ({ proposal, index, proposalListLength }) => {
 
   const handleVote = async (voteId) => {
     let userChoice;
-    const handleChoice = () => {
-      if (voteId === 1) {
-        userChoice = { Approve: null };
-      } else if (voteId === 2) {
-        userChoice = { Reject: null };
-      } else {
-        userChoice = { Pass: null };
-      }
-    };
-    handleChoice();
+
+    if (voteId === 1) {
+      userChoice = { Approve: null };
+    } else if (voteId === 2) {
+      userChoice = { Reject: null };
+    } else {
+      userChoice = { Pass: null };
+    }
+    console.log(index);
     setVoting(true);
     console.log(userChoice);
-    const reverseIndex = proposalListLength - index;
-
+    try {
+      let result = await final_project_backend.vote(index, {
+        Approve: null,
+      });
+      console.log("Result is : ", result);
+    } catch (e) {
+      console.log(e);
+    }
     //Vote call to contract
     console.log("after vote has called");
-    console.log(vote);
-    window.location.reload();
+    // console.log(vote);
+    // window.location.reload();
     setVoting(false);
   };
   const handleEndProposal = async () => {
-    const reverseIndex = proposalListLength - index;
     setEndingProposal(true);
     //end porposal call to contract
     console.log("Proposal ended!");
     setEndingProposal(false);
-    window.location.reload();
+    // window.location.reload();
   };
 
   const editProposal = async (count) => {

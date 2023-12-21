@@ -11,7 +11,6 @@ export const AuthProvider = ({ children }) => {
   const [identity, setIdentity] = useState(null);
 
   useEffect(() => {
-    console.log(authClient);
     (async () => {
       const identity = await authClient.getIdentity();
       if (identity?.constructor?.name === "DelegationIdentity") {

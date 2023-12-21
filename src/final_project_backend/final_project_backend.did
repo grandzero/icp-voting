@@ -27,9 +27,11 @@ type Result =
 type VoteError = 
     variant {
         AlreadyVoted;
+        ProposalDoesNotExist;
         ProposalIsNotActive;
-        NoSuchProposal;
         AccessRejected;
+        UpdateError;
+        PrivilegedNoBalance;
     };
 
 type Choice = 
@@ -38,11 +40,7 @@ type Choice =
         Reject;
         Pass;
     };
-type Test = 
-    record{
-        val: opt nat32;
-        val_test: nat32
-    };
+
 service: {
     "get_proposal_string": (nat64) -> (text) query;
     "get_proposal": (nat64) -> (opt Proposal) query;

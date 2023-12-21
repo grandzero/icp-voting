@@ -20,11 +20,18 @@ enum Choice {
 }
 #[derive(CandidType, Deserialize, Debug)]
 enum VoteError {
+    #[serde(rename = "AlreadyVoted")]
     AlreadyVoted,
+    #[serde(rename = "ProposalDoesNotExist")]
     ProposalDoesNotExist,
+    #[serde(rename = "ProposalIsNotActive")]
     ProposalIsNotActive,
+    #[serde(rename = "AccessRejected")]
     AccessRejected,
+    #[serde(rename = "UpdateError")]
     UpdateError,
+    #[serde(rename = "PrivilegedNoBalance")]
+    PrivilegedNoBalance,
 }
 #[derive(CandidType, Deserialize, Debug, Clone)]
 struct Proposal {
@@ -36,12 +43,6 @@ struct Proposal {
     voters: Vec<candid::Principal>,
     owner: candid::Principal,
     privilege: Option<candid::Principal>,
-}
-
-#[derive(CandidType, Deserialize, Debug)]
-struct Test {
-    val: Option<u32>,
-    val_test: u32,
 }
 
 #[derive(CandidType, Deserialize, Debug)]
@@ -69,6 +70,7 @@ impl BoundedStorable for Proposal {
 thread_local! {
     static MEMORY_MANAGER: RefCell<MemoryManager<DefaultMemoryImpl>> = RefCell::new(MemoryManager::init(DefaultMemoryImpl::default()));
     static PROPOSALS: RefCell<StableBTreeMap<u64, Proposal, Memory>> = RefCell::new(StableBTreeMap::init(MEMORY_MANAGER.with(|mm| mm.borrow().get(MemoryId::new(0)))));
+
 }
 
 #[ic_cdk::query]
@@ -184,19 +186,17 @@ fn end_proposal(key: u64) -> Result<(), VoteError> {
 
 #[ic_cdk::update]
 async fn vote(key: u64, choice: Choice) -> Result<(), VoteError> {
-    let is_privileged_and_has_balance = get_proposal(key).and_then(|prop| prop.privilege);
+    let proposal_details = PROPOSALS.with(|proposals| proposals.borrow().get(&key));
 
-    if let Some(nft_canister) = is_privileged_and_has_balance {
+    if let Some(nft_canister) = proposal_details.unwrap().privilege {
         let user_principal =  ic_cdk::caller()/* the principal you want to pass as argument */;
         let result: CallResult<(u64,)> =
             call(nft_canister, "balanceOfDip721", (user_principal,)).await;
         if let result::Result::Ok((balance,)) = result {
             if balance == 0 {
-                return Err(VoteError::AccessRejected);
+                return Err(VoteError::PrivilegedNoBalance);
             }
         }
-    } else {
-        return Err(VoteError::ProposalDoesNotExist);
     }
 
     PROPOSALS.with(|proposals| {
