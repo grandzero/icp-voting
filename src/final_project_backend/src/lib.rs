@@ -128,7 +128,8 @@ async fn create_proposal(key: u64, proposal: CreateProposal) -> Option<Proposal>
             owner: ic_cdk::caller(),
             privilege: proposal.privilege,
         };
-        proposals.insert(key, proposal)
+        proposals.insert(key, proposal.clone());
+        return Some(proposal.clone());
     })
 }
 

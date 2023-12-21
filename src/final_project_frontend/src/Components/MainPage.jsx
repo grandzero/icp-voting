@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import NavBar from "./NavBar";
 import bgImg from "../../assets/700.jpg";
 import { final_project_backend } from "../../../declarations/final_project_backend/index";
-import RoundProfileSection from "./RoundProfileSection";
+import CreateProposalSection from "./CreateProposalSection";
 import FourCardsSection from "./FourCardsSection";
 import HeroSection from "./HeroSection";
 
@@ -18,6 +18,8 @@ const MainPage = () => {
       // const arg= {val_test: 1, val: [1]} ;
       let proposals = await final_project_backend.get_proposal_list();
       console.log("Proposal list : ", proposals);
+      let proposal_count = await final_project_backend.get_proposal_count();
+      console.log(proposal_count);
       setProposalList(proposals);
       setProposalCount(proposals.length);
       setCurrentProposal(proposals[proposals.length - 1]);
@@ -45,14 +47,14 @@ const MainPage = () => {
       >
         <NavBar />
 
-        {currentProposal && (
+        {/* {currentProposal && (
           <HeroSection
             proposalCount={proposalCount}
             currentProposal={currentProposal}
           />
-        )}
+        )} */}
         <div className={inputSectionStyle}>
-          <RoundProfileSection
+          <CreateProposalSection
             proposalList={proposalList}
             currentProposal={currentProposal}
             proposalCount={proposalCount}

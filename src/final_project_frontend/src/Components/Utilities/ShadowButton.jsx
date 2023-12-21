@@ -21,7 +21,7 @@ const hoverStyles = {
     "0 0 5px rgb(35, 35, 35), 0 0 25px rgb(35, 35, 35), 0 0 50px rgb(35, 35, 35), 0 0 100px rgb(35, 35, 35)",
 };
 
-const ShadowButton = ({ onClick, loading }) => {
+const ShadowButton = ({ onClick, loading, isAuthenticated }) => {
   const [isHovered, setIsHovered] = useState(false);
 
   const handleMouseEnter = () => {
@@ -38,6 +38,7 @@ const ShadowButton = ({ onClick, loading }) => {
       style={isHovered ? { ...styles, ...hoverStyles } : styles}
       onMouseEnter={() => handleMouseEnter()}
       onMouseLeave={() => handleMouseLeave()}
+      disabled={!isAuthenticated}
     >
       {loading ? "Sending Proposal..." : "Send Proposal"}
     </button>
